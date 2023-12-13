@@ -1,0 +1,58 @@
+<h6 *ngIf="message_auth">{{message_auth}} <a [routerLink]="['/login']">connexion</a></h6>
+<div class="container mt-5" *ngIf="!message_auth">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-lg">
+                <div class="card-body p-5">
+                    <h5 class="text-center mb-4"><i class="bi bi-bag-check-fill"></i> Ajouter une adresse</h5>
+                    <form name="form" #f="ngForm" (ngSubmit)="f.form.valid && onSubmit()">
+                        <div class="mb-3">
+                            <label for="typeAddress" class="form-label">Type d'adresse</label>
+                            <select name="typeAddress" class="form-control" id="typeAddress"
+                                [(ngModel)]="address.typeAddress" #typeAddress="ngModel" (change)="clearUsernameError()"
+                                required>
+                                <option *ngFor="let type of addressTypes" [value]="type">{{ type }}</option>
+                            </select>
+                            <div class="form_errors" *ngIf="typeAddress.errors && f.submitted">Type requis</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="country" class="form-label">Pays</label>
+                            <input name="country" class="form-control" id="country" [(ngModel)]="address.country"
+                                #country="ngModel" required>
+                            <div class="form_errors" *ngIf="country.errors && f.submitted">pays requis</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="city" class="form-label">Ville</label>
+                            <input name="city" class="form-control" id="city" [(ngModel)]="address.city" #city="ngModel"
+                                required>
+                            <div class="form_errors" *ngIf="city.errors && f.submitted">ville requise</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="street" class="form-label">Rue</label>
+                            <input name="street" class="form-control" id="city" [(ngModel)]="address.street"
+                                #street="ngModel" required>
+                            <div class="form_errors" *ngIf="street.errors && f.submitted">rue requise</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="postalCode" class="form-label">code Postal</label>
+                            <input name="postalCode" class="form-control" id="postalCode"
+                                [(ngModel)]="address.postalCode" #postalCode="ngModel" required>
+                            <div class="form_errors" *ngIf="postalCode.errors && f.submitted">code postal requis</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-40 mb-3 me-2"><i
+                                class="bi bi-plus-circle-fill"></i> Ajouter</button>
+                        <button type="button" [routerLink]="['/home']" class="btn btn-danger w-40 mb-3 ml-3  "> <i
+                                class="bi bi-x-circle-fill"></i> Annuler</button>
+                        <hr class="my-4">
+
+                        <!-- Message de confirmation -->
+                        <div class="alert alert-success mt-3" *ngIf="ajoutValide">
+                            adresse ajoutée!
+                            <a [routerLink]="['/home']" class="alert-link">Retour à la page d'accueil</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

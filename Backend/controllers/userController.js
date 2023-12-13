@@ -5,7 +5,7 @@ const User = db.User;
 const Card = db.Card;
 const Address = db.Address;
 
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 //const
 const jwtKey = process.env.JWT_SECRET;
@@ -85,9 +85,9 @@ exports.userCreate = async (req, res) => {
 //define an user as admin
 exports.userUpdateAdmin = async function (req, res) {
     const userId = req.params.idUser;
-    const { lastname, firstname, username, email, password, isAdmin } = req.body;
+    const { lastname, firstname, username, email, password, isAdmin, createdAt } = req.body;
     // Vérifier si les champs requis sont présents
-    if (lastname == null || firstname == null || username == null || email == null || password == null) {
+    if (lastname == null || firstname == null || username == null || email == null) {
         console.log('admin :', req.body);
         return res.status(400).json({ message: 'missing parameters' });
     }
@@ -109,6 +109,7 @@ exports.userUpdateAdmin = async function (req, res) {
                 email,
                 password,
                 isAdmin,
+                createdAt,
             },
             { where: { idUser: userId } }
         );

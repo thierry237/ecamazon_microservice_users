@@ -28,7 +28,9 @@ app.use(function (req, res, next) {
 });
 
 // Launch app to listen to specified port
-const port = process.env.PORT || 8000;
-app.listen(port, function () {
+const port = process.env.PORT || 8003;
+const server = app.listen(port, function () {
     console.log('Runnings on ' + process.env.SERVER + port);
 });
+
+module.exports = server;

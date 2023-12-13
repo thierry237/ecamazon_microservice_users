@@ -1,0 +1,60 @@
+<h6 *ngIf="message_auth">{{message_auth}} <a [routerLink]="['/login']">connexion</a></h6>
+<div class="container mt-5" *ngIf="!message_auth">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-lg">
+                <div class="card-body p-5">
+                    <h5 class="text-center mb-4">modification de {{card.methodPayment}}</h5>
+                    <form name="form" #f="ngForm" (ngSubmit)="f.form.valid && updateCard()">
+                        <div class="mb-3">
+                            <label for="methodPayment" class="form-label">Méthode de Paiement</label>
+                            <input type="text" name="methodPayment" class="form-control" id="methodPayment"
+                                [(ngModel)]="card.methodPayment" readonly>
+                            <div class="form_errors" *ngIf="message_error">Cette card existe déjà</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cardNumber" class="form-label">IBAN</label>
+                            <input name="cardNumber" class="form-control" id="cardNumber" [(ngModel)]="card.cardNumber"
+                                #cardNumber="ngModel" required>
+                            <div class="form_errors" *ngIf="cardNumber.errors && f.submitted">IBAN requis</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nameCard" class="form-label">Nom du Titulaire</label>
+                            <input name="nameCard" class="form-control" id="nameCard" [(ngModel)]="card.nameCard"
+                                #nameCard="ngModel" required>
+                            <div class="form_errors" *ngIf="nameCard.errors && f.submitted">nom requis</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="expiredDate" class="form-label">Date d'expiration</label>
+                            <input name="expiredDate" class="form-control" id="expiredDate"
+                                [(ngModel)]="card.expiredDate" #expiredDate="ngModel" required>
+                            <div class="form_errors" *ngIf="expiredDate.errors && f.submitted">date requise</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cvv" class="form-label">CVV</label>
+                            <input name="cvv" class="form-control" id="cvv" [(ngModel)]="card.cvv" #cvv="ngModel"
+                                required pattern="[0-9]{3}" />
+                            <div class="form_errors" *ngIf="cvv.errors && f.submitted">
+                                <div class="form_errors" *ngIf="cvv.errors['required']">CVV requis</div>
+                                <div class="form_errors" *ngIf="cvv.errors['pattern']">Veuillez saisir un code CVV
+                                    valide
+                                    (3 chiffres).</div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-40 mb-3 me-2"><i
+                                class="bi bi-plus-circle-fill"></i> Valider</button>
+                        <button type="button" [routerLink]="['/home']" class="btn btn-danger w-40 mb-3 ml-3  "> <i
+                                class="bi bi-x-circle-fill"></i> annuler</button>
+                        <hr class="my-4">
+
+                        <!-- Message de confirmation d'inscription -->
+                        <div class="alert alert-success mt-3" *ngIf="modificationValide">
+                            {{card.methodPayment}} modifiée !
+                            <a [routerLink]="['/home']" class="alert-link">Retour à la liste des cours</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

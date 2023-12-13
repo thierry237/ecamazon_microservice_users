@@ -1,0 +1,137 @@
+<h6 *ngIf="message_error">{{message_error}} <a [routerLink]="['/login']">connexion</a></h6>
+<div class="container" *ngIf="!message_error">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand text-arial">Ecamazon</a>
+            <a class="navbar-brand text-arial"> </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item ">
+                        <a class="nav-link text-primary" [routerLink]="['/course']"> <i
+                                class="bi bi-house-add-fill"></i>Accueil</a>
+                    </li>
+                    <li class="nav-item" *ngIf="isAdmin">
+                        <a class="nav-link text-primary" [routerLink]="['/user']"> <i
+                                class="bi bi-person-lines-fill"></i>utilisateurs</a>
+                    </li>
+                </ul>
+                <form class="form-inline my-2 my-lg-0 mx-auto">
+                    <div class="d-flex">
+                        <div class="form-group mx-2">
+                            <input type="text" class="form-control" id="search- " placeholder="Recherche"
+                                name="searchCourse">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm mr-3"><i class="bi bi-search"></i></button>
+                    </div>
+                </form>
+                <div class="d-flex">
+                    <button [routerLink]="['/user/edit', idUser]" class="btn btn-secondary me-2"><i
+                            class="bi bi-person"></i>
+                        Editer</button>
+                    <button class="btn btn-danger" (click)="logoutUser()"><i class="bi bi-person-x-fill"></i>
+                        Quitter</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <h4 class="text-arial">Bienvenue {{username}}</h4>
+    <hr>
+
+    <div class="row mt-3">
+        <!-- Colonnes pour les cartes -->
+        <div class="col-md-6" *ngIf="cardsWithUser">
+            <h5>Cartes de Crédit</h5>
+            <button [routerLink]="['/card/add']" [disabled]="cardsWithUser.length >=2"
+                class="btn btn-primary mb-3">Ajouter une carte</button>
+            <p *ngIf="cardsWithUser.length >= 2" class="text-danger">Vous ne pouvez plus ajouter de Cartes</p>
+            <hr>
+            <div class="card-deck">
+                <h6 *ngIf="error_card" class="text-danger">{{error_card}}</h6>
+                <div class="card mt-3" *ngFor="let card of cardsWithUser">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">
+                        </h5>
+                        <h6>Méthode de Paiement :</h6>
+                        <p class="card-text"> {{ card.methodPayment }}</p>
+                        <h6>Nom du Titulaire :</h6>
+                        <p class="card-text">{{ card.nameCard }}</p>
+                        <h6>IBAN :</h6>
+                        <p class="card-text">{{ card.cardNumber }}</p>
+                        <h6>Date d'expiration :</h6>
+                        <p class="card-text">{{ card.expiredDate |
+                            date:' MMMM y':'fr-FR' }}</p>
+                        <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="card-footer">
+                                    <p class="card-text" *ngIf="card.idUser !== undefined">
+                                        <small class="text-muted">ajoutée le {{ card.createdAt |
+                                            date:'EEEE d MMMM y à HH:mm:ss':'fr-FR' }}</small>
+                                    </p>
+                                </div>
+
+                                <div *ngIf="isAdmin || idUser === card.idUser">
+                                    <button (click)="deleteCard(card.idCard)" class="btn btn-danger btn-sm me-2"><i
+                                            class="bi bi-trash"></i></button>
+                                    <button [routerLink]="['/card/edit', card.idCard]" *ngIf=" idUser === card.idUser"
+                                        class="btn btn-secondary btn-sm"><i class="bi bi-pencil-square"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Colonnes pour les adresses -->
+        <div class="col-md-6" *ngIf="addressesWithUser">
+            <h5>Adresses</h5>
+            <button [routerLink]="['/address/add']" class="btn btn-primary mb-3"
+                [disabled]="addressesWithUser.length >=2">Ajouter une adresse</button>
+            <p *ngIf="addressesWithUser.length >= 2" class="text-danger">Vous ne pouvez plus ajouter d'adresses</p>
+
+            <hr>
+            <div class="card-deck">
+                <h6 *ngIf="error_address" class="text-danger">{{error_address}}</h6>
+                <div class="card mt-3" *ngFor="let address of addressesWithUser">
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">
+                        </h5>
+                        <h6>Adresse de :</h6>
+                        <p class="card-text">{{ address.typeAddress }}</p>
+                        <h6>Pays :</h6>
+                        <p class="card-text">{{ address.country }}, {{ address.city }}</p>
+                        <h6>Rue :</h6>
+                        <p class="card-text">{{ address.street}}</p>
+                        <h6>Code Postal :</h6>
+                        <p class="card-text">{{ address.postalCode}}</p>
+                        <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="card-footer">
+                                    <p class="card-text" *ngIf="address.idUser !== undefined">
+                                        <small class="text-muted">ajoutée le {{ address.createdAt |
+                                            date:'d MMMM y à HH:mm:ss':'fr-FR' }}</small>
+                                    </p>
+                                </div>
+
+                                <div *ngIf="isAdmin || idUser === address.idUser">
+                                    <button (click)="deleteAddress(address.idAddress)"
+                                        class="btn btn-danger btn-sm me-2"><i class="bi bi-trash"></i></button>
+                                    <button [routerLink]="['/address/edit', address.idAddress]"
+                                        *ngIf="idUser === address.idUser" class="btn btn-secondary btn-sm"><i
+                                            class="bi bi-pencil-square"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dans votre template -->
+    <a class="btn-danger" (click)="deleteAccount()">Supprimer mon compte</a>
+</div>

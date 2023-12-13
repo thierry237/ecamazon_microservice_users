@@ -24,7 +24,7 @@ const Card = sequelize.define('card', {
     },
 
     expiredDate: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: false,
         unique: false
     },

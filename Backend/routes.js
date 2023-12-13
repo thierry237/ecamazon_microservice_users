@@ -25,9 +25,9 @@ router.put('/user/admin/:idUser', auth.isAuthorized, auth.isAdmin, userControlle
 
 //api address
 router.get('/addresses', auth.isAuthorized, addressController.addressList);
-router.post('/address', auth.isAuthorized, auth.isAdmin, addressController.addressCreate);
-router.put('/address/:idAddress', auth.isAuthorized, auth.isAdmin, addressController.addressUpdate);
-router.delete('/address/:idAddress', auth.isAuthorized, auth.isAdmin, addressController.addressDelete);
+router.post('/address', auth.isAuthorized, addressController.addressCreate);
+router.put('/address/:idAddress', auth.isAuthorized, addressController.addressUpdate);
+router.delete('/address/:idAddress', auth.isAuthorized, addressController.addressDelete);
 router.get('/address/:idAddress', auth.isAuthorized, addressController.addressFindOne);
 router.post('/address/search', auth.isAuthorized, addressController.addressFindOp);
 router.get('/user/:idUser/addresses', auth.isAuthorized, addressController.listAddressUser);

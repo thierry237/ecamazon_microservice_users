@@ -1,0 +1,74 @@
+<h6 *ngIf="message_auth">{{message_auth}} <a [routerLink]="['/login']">connexion</a></h6>
+<div class="container mt-5" *ngIf="!message_auth">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-lg">
+                <div class="card-body p-5">
+                    <h5 class="text-center mb-4"><i class="bi bi-card-heading"></i> Ajouter une carte</h5>
+                    <form name="form" #f="ngForm" (ngSubmit)="f.form.valid && onSubmit()">
+                        <div class="mb-3">
+                            <label for="methodPayment" class="form-label">Méthode de Paiement :</label>
+                            <select name="methodPayment" class="form-control" id="methodPayment"
+                                [(ngModel)]="card.methodPayment" #methodPayment="ngModel"
+                                (change)="clearUsernameError()" required>
+                                <option *ngFor="let type of cardTypes" [value]="type">{{ type}}
+                                </option>
+                            </select>
+                            <div class="form_errors" *ngIf="methodPayment.errors && f.submitted">Moyen de paiement
+                                requis</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cardNumber" class="form-label">IBAN :</label>
+                            <input name="cardNumber" class="form-control" id="cardNumber" [(ngModel)]="card.cardNumber"
+                                #cardNumber="ngModel" required>
+                            <div class="form_errors" *ngIf="cardNumber.errors && f.submitted">IBAN requis</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nameCard" class="form-label">Nom du Titulaire</label>
+                            <input name="nameCard" class="form-control" id="nameCard" [(ngModel)]="card.nameCard"
+                                #nameCard="ngModel" required>
+                            <div class="form_errors" *ngIf="nameCard.errors && f.submitted">Nom requis</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="expiredDate" class="form-label">Date d'expiration</label>
+                            <input name="expiredDate" class="form-control" id="expiredDate"
+                                [(ngModel)]="card.expiredDate" #expiredDate="ngModel" required
+                                pattern="\d{4}-\d{2}-\d{2}" placeholder="2023-10-23" />
+                            <div class="form_errors" *ngIf="expiredDate.errors && f.submitted">
+                                <div class="form_errors" *ngIf="expiredDate.errors && expiredDate.errors['required']">
+                                    date requise</div>
+                                <div class="form_errors" *ngIf="expiredDate.errors && expiredDate.errors['pattern']">
+                                    format
+                                    incorrect</div>
+                            </div>
+
+                        </div>
+                        <div class="mb-3">
+                            <label for="cvv" class="form-label">cvv</label>
+                            <input name="cvv" class="form-control" id="cvv" [(ngModel)]="card.cvv" #cvv="ngModel"
+                                required type="text" pattern="[0-9]{3}" placeholder="123">
+                            <div class="form_errors" *ngIf="cvv.errors && f.submitted">
+                                <div class="form_errors" *ngIf="cvv.errors && cvv.errors['required']">cvv requis</div>
+                                <div class="form_errors" *ngIf="cvv.errors && cvv.errors['pattern']">Veuillez saisir un
+                                    code CVV valide (3
+                                    chiffres).</div>
+
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-40 mb-3 me-2"><i
+                                class="bi bi-plus-circle-fill"></i> Ajouter</button>
+                        <button type="button" [routerLink]="['/home']" class="btn btn-danger w-40 mb-3 ml-3  "> <i
+                                class="bi bi-x-circle-fill"></i> Annuler</button>
+                        <hr class="my-4">
+
+                        <!-- Message de confirmation -->
+                        <div class="alert alert-success mt-3" *ngIf="ajoutValide">
+                            adresse ajoutée!
+                            <a [routerLink]="['/home']" class="alert-link">Retour à la page d'accueil</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

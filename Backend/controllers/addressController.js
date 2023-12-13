@@ -53,7 +53,7 @@ exports.addressUpdate = async function (req, res) {
         if (address.typeAddress == null || address.country == null || address.city == null || address.street == null || address.postalCode == null) {
             return res.status(400).json({ 'error': 'missing parameters' })
         }
-        if (address.typeAddress.trim() == "" || address.country.trim() == "" || address.city.trim() == "" || address.street.trim() == "" || address.postalCode.trim() == "") {
+        if (address.typeAddress.trim() == "" || address.country.trim() == "" || address.city.trim() == "" || address.street.trim() == "" || address.postalCode.toString().trim() == "") {
             return res.status(400).json({ 'error': 'missing parameters' })
         }
 

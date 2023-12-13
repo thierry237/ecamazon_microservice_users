@@ -1,0 +1,73 @@
+<h6 *ngIf="message_auth">{{message_auth}} <a [routerLink]="['/login']">connexion</a></h6>
+<section class="container" *ngIf="!message_auth">
+    <!-- Barre de navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand text-arial">AppForum</a>
+            <a class="navbar-brand text-arial"> </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item " [routerLink]="['/home']">
+                        <a class="nav-link text-primary"> <i class="bi bi-house-add-fill"></i>Accueil</a>
+                    </li>
+                </ul>
+                <!-- Barre de recherche d'utilisateurs -->
+                <form class="form-inline my-2 my-lg-0 mx-auto">
+                    <div class="d-flex">
+                        <div class="form-group mx-2">
+                            <input type="text" class="form-control" id="search- "
+                                placeholder="Recherche un utilisateur..." name="searchUser" [(ngModel)]="searchUser"
+                                (ngModelChange)="onSearchChange()">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm mr-3"><i class="bi bi-search"
+                                (click)="searchUserAPI()"></i></button>
+                    </div>
+
+                </form>
+                <!-- Bouton de déconnexion -->
+                <div class="d-flex">
+                    <button [routerLink]="['/user/edit', idUser]" class="btn btn-secondary me-2"><i
+                            class="bi bi-person"></i>
+                        Editer</button>
+                    <button class="btn btn-danger" (click)="logoutUser()"><i class="bi bi-person-x-fill"></i>
+                        Quitter</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- Liste des utilisateurs -->
+    <div class="row comments-container">
+        <div class="col-12">
+            <div class="card-deck">
+                <div *ngFor="let user of users" class="card mt-3">
+                    <div class="card-body d-flex justify-content-between">
+                        <p class="card-text"><i class="bi bi-person-vcard"></i>
+                            <small class="text-muted">Nom & Prénom:</small> {{user.lastname}}
+                            {{user.firstname}}
+                        </p>
+
+                    </div>
+                    <div class="card-footer">
+                        <p class="card-text"><small class="text-muted"><i class="bi bi-person-circle"></i> {{
+                                user.username }}</small></p>
+                        <!-- Bouton de suppression de l'utilisateur(s'affiche ssi on est admin) -->
+                        <button class="btn btn-danger btn-sm me-2 " *ngIf="user.idUser!==undefined && isAdmin"
+                            (click)="deleteUser(user.idUser)">
+                            <i class="bi bi-trash icon-sm"></i>
+                        </button>
+                        <!-- modifier l'utilisateur en admin ou inversement -->
+                        <button class="btn btn-secondary btn-sm" *ngIf="user.idUser!==undefined && isAdmin"
+                            (click)="addAdmin(user.idUser)"><i class="bi bi-person-fill-check"
+                                [ngClass]="{'text-success': user.isAdmin}"></i>
+
+                            admin:<input type="checkbox"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
