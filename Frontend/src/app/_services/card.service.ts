@@ -9,7 +9,18 @@ import { ICard } from '../_interfaces/card';
 })
 export class CardService {
 
-  baseUrl: string = 'http://localhost:8002'
+  baseUrl: string = 'http://localhost:8004'
+
+  /*baseUrl : string = 'http://localhost:8002'
+  //ajouter une cart
+  addCard(card: ICard): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    })
+    return this.http.post<any>(this.baseUrl + '/card', card, { "headers": headers })
+  } */
+
 
   constructor(private http: HttpClient) { }
 

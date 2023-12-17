@@ -9,7 +9,19 @@ import { IAddress } from '../_interfaces/address';
 })
 export class AddressService {
 
-  baseUrl: string = 'http://localhost:8002'
+  baseUrl: string = 'http://localhost:8004'
+
+  /*baseUrl : string = 'http://shipping:8002'
+  ajouter address (envoyer cette information à l'équipe shipping)
+  addAddress(address: IAddress): Observable<any> {
+     const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      })
+      return this.http.post<any>(this.baseUrl + '/address', address, { "headers": headers })
+    } 
+    
+  */
 
 
   constructor(private http: HttpClient) { }

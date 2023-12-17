@@ -1,129 +1,153 @@
-const request = require('supertest');
-const app = require('../server');
-const db = require('../models/index');
-const server = require('../server.js');
+// userController.test.js
+// https://bcrypt-generator.com/
 
-const User = db.User;
-
-describe('API /users', () => {
-    let testUserId;
+const { loginUser, userCreate } = require('../controllers/userController');
+const User = require('../models/userModel');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 
-    beforeAll(async () => {
-        await db.sequelize.sync({ force: true });
-    });
+const mockReq = (body) => ({ body });
+const mockRes = () => {
+    const res = {};
+    res.status = jest.fn().mockReturnValue(res);
+    res.json = jest.fn().mockReturnValue(res);
+    return res;
+};
 
-    afterAll((done) => {
-        server.close(done);
-    });
+const cookieMock = jest.fn(); // Déclarez le cookieMock en dehors de res
 
-
-    afterEach(async () => {
-        if (testUserId) {
-            const userToDelete = await User.findByPk(testUserId);
-            console.log('Before user deletion:', userToDelete);
-
-            const deletionResult = await User.destroy({ where: { idUser: testUserId } });
-            console.log('Deletion result:', deletionResult);
-
-            // Recherchez à nouveau l'utilisateur après la suppression
-            const userAfterDeletion = await User.findByPk(testUserId);
-
-            // Si l'utilisateur n'existe plus, userAfterDeletion sera null
-            if (userAfterDeletion) {
-                console.log('After user deletion', userAfterDeletion.dataValues);
-            } else {
-                console.log('User has been deleted');
-            }
-        }
-    });
-
-    it('POST /user - Créer un utilisateur et se connecter', async () => {
-
-        console.log('Before creating user');
-        const newUser = {
-            lastname: 'Doe',
-            firstname: 'John',
-            username: 'john_doe',
-            email: 'john@example.com',
-            password: 'password',
-            isAdmin: false,
-        };
-
-        const createResponse = await request(app).post('/user').send(newUser);
-
-        // Vérification de la réponse de création
-        expect(createResponse.statusCode).toBe(201);
-        expect(createResponse.body).toHaveProperty('idUser');
-        expect(createResponse.body).toHaveProperty('username', newUser.username);
-        expect(createResponse.body).toHaveProperty('isAdmin', newUser.isAdmin);
-        testUserId = createResponse.body.idUser;
+const res = {
+    status: jest.fn().mockReturnValue({ cookie: cookieMock }),
+    json: jest.fn(),
+    cookie: cookieMock,
+};
+res.json.mockReturnValue(res);
 
 
-        const loginCredentials = {
-            email: newUser.email,
-            password: newUser.password,
 
-        };
-        console.log('login', loginCredentials);
+describe('userController', () => {
+    describe('userCreate', () => {
+        let findOneMock;
+        let createMock;
 
+        beforeEach(() => {
+            findOneMock = jest.spyOn(User, 'findOne');
+            createMock = jest.spyOn(User, 'create');
+        });
 
-        const loginResponse = await request(app).post('/login').send(loginCredentials);
-        console.log('response', loginResponse.statusCode);
+        afterEach(() => {
+            findOneMock.mockRestore();
+            createMock.mockRestore();
+        });
 
-        // Vérification de la réponse de connexion
-        expect(loginResponse.statusCode).toBe(200);
-        expect(loginResponse.body).toHaveProperty('idUser');
-        expect(loginResponse.body).toHaveProperty('username', newUser.username);
-        expect(loginResponse.body).toHaveProperty('isAdmin', newUser.isAdmin);
+        test('devrait renvoyer 400 en cas de paramètres manquants', async () => {
+            const req = mockReq({});
+            const res = mockRes();
 
+            await userCreate(req, res);
 
-    });
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({ 'error': 'missing parameters' });
+        });
 
-    it('DELETE /user - supprimer utilisateur', async () => {
-        try {
-
-
-            // Créez un nouvel utilisateur
-            const newUser = {
+        test('devrait renvoyer 201 si l\'utilisateur est créé avec succès', async () => {
+            const req = mockReq({
                 lastname: 'Doe',
                 firstname: 'John',
-                username: 'john_doe',
-                email: 'john@example.com',
+                username: 'johndoe',
+                email: 'john.doe@example.com',
                 password: 'password',
                 isAdmin: false,
-            };
+            });
+            const res = mockRes();
 
-            const createResponse = await request(app).post('/user').send(newUser);
+            findOneMock.mockResolvedValue(null);
+            createMock.mockResolvedValue({
+                idUser: 1,
+                username: 'johndoe',
+                isAdmin: false,
+            });
 
-            // Vérification de la réponse de création
-            expect(createResponse.statusCode).toBe(201);
-            expect(createResponse.body).toHaveProperty('idUser');
-            expect(createResponse.body).toHaveProperty('username', newUser.username);
-            expect(createResponse.body).toHaveProperty('isAdmin', newUser.isAdmin);
-            let delUserId = createResponse.body.idUser;
+            await userCreate(req, res);
+
+            expect(findOneMock).toHaveBeenCalled();
+            expect(createMock).toHaveBeenCalled();
+            expect(res.status).toHaveBeenCalledWith(201);
+            expect(res.json).toHaveBeenCalledWith({
+                'idUser': 1,
+                'username': 'johndoe',
+                'isAdmin': false,
+            });
+        });
 
 
-            // Effectuez une demande de suppression de l'utilisateur avec le token
-            const deleteResponse = await request(app)
-                .delete(`/user/${delUserId}`);
-
-            // Vérification de la réponse de suppression
-            expect(deleteResponse.statusCode).toBe(200);
-
-            // Vérifiez que l'utilisateur a été supprimé
-            const userAfterDeletion = await User.findByPk(delUserId);
-
-            // Si l'utilisateur n'existe plus, userAfterDeletion sera null
-            if (userAfterDeletion) {
-                console.log('User has not been deleted');
-            } else {
-                console.log('User has been deleted');
-            }
-        } catch (error) {
-            console.error('Create and delete user test failed with error:', error);
-            throw error;
-        }
     });
 
+    describe('loginUser', () => {
+        let findOneMock;
+        let compareMock;
+        let signMock;
+
+        beforeEach(() => {
+            findOneMock = jest.spyOn(User, 'findOne');
+            compareMock = jest.spyOn(bcrypt, 'compare');
+            signMock = jest.spyOn(jwt, 'sign');
+        });
+
+        afterEach(() => {
+            findOneMock.mockRestore();
+            compareMock.mockRestore();
+            signMock.mockRestore();
+        });
+
+        test('devrait renvoyer 400 si l\'utilisateur n\'existe pas', async () => {
+            // Test setup
+            const req = mockReq({
+                email: 'john.doe@example.com',
+                password: 'password',
+            });
+            const res = mockRes();
+
+            // Mock user does not exist
+            findOneMock.mockResolvedValue(null);
+
+            // Test execution
+            await loginUser(req, res);
+
+            // Assertions
+            expect(findOneMock).toHaveBeenCalled();
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({ 'message': 'user doesnt exist (check your email)' });
+        });
+
+        test('devrait renvoyer 400 si le mot de passe est incorrect', async () => {
+            // Test setup
+            const req = mockReq({
+                email: 'john.doe@example.com',
+                password: 'incorrectPassword',
+            });
+            const res = mockRes();
+
+            // Mock user exists
+            const mockUser = {
+                idUser: 1,
+                email: 'john.doe@example.com',
+                password: 'incorrectPassword', // Replace with a valid hash
+            };
+            findOneMock.mockResolvedValue(mockUser);
+
+            // Mock password comparison fails
+            compareMock.mockResolvedValue(false);
+
+            // Test execution
+            await loginUser(req, res);
+
+            // Assertions
+            expect(findOneMock).toHaveBeenCalled();
+            expect(compareMock).toHaveBeenCalled();
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.json).toHaveBeenCalledWith({ 'message': 'incorrect password' });
+        });
+    });
 });

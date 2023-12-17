@@ -9,17 +9,7 @@ const sequelize = new Sequelize(
     process.env.DB_USER,
     process.env.DB_PASSWORD, {
     dialect: 'mysql',
-    host: 'localhost',
+    host: 'localhost'
 });
-
-// Vérifier la connexion à la base de données
-sequelize.authenticate()
-    .then(() => {
-        console.log('Connexion à la base de données réussie.');
-    })
-    .catch(err => {
-        console.error('Impossible de se connecter à la base de données :', err);
-    });
-
 
 module.exports = sequelize
