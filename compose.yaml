@@ -1,20 +1,61 @@
 version: '3'
 
 services:
-  backend:
-    build:
-      context: ./Backend
-      dockerfile: Dockerfile
-    volumes:
-      - ./Backend:/app
-      - /app/node_modules
-    ports:
-      - "3000:3000"
-    depends_on:
-      - mysql-server
 
-  mysql-server:
+  mysql-user:
+    container_name: mysql-container
     image: mysql:8.0
+    ports:
+      - 3307:3306
+    expose:
+      - 3307
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: ecamazon_users
+      MYSQL_USER: user
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      user-networks:
+        ipv4_address: 172.21.0.2
+
+  user-api:
+    container_name: api-container
+    build: ./Backend
+    command : npm run start
+    image: user-api:v1
+    ports:
+      - "8004:8004"
+    expose:
+      - "8004"
+    networks:
+      user-networks:
+        ipv4_address: 172.21.0.3
+    depends_on:
+      - mysql-user
+    environment:
+      DATABASE_URL: mysql://root@172.21.0.2:3306/ecamazon_users
+
+  user-service:
+    container_name: user-container
+    build: ./Frontend
+    image: user-service:v1
+    ports:
+      - "80:80"
+    expose:
+      - "80"
+    networks:
+      user-networks:
+        ipv4_address: 172.21.0.4
+    depends_on:
+      - user-api
+
+networks:
+  user-networks:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16
+
+volumes:
+  mysql-data:

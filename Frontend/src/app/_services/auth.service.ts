@@ -11,7 +11,7 @@ import { IResponseRegister, IUser } from '../_interfaces/user';
 })
 export class AuthService {
 
-  baseUrl: string = 'http://localhost:8004'
+  baseUrl: string = 'http://127.0.0.1:8004'
 
   constructor(private http: HttpClient) { }
 

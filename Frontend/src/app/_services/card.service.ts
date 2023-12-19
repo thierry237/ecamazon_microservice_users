@@ -9,7 +9,7 @@ import { ICard } from '../_interfaces/card';
 })
 export class CardService {
 
-  baseUrl: string = 'http://localhost:8004'
+  baseUrl: string = 'http://127.0.0.1:8004'
 
   /*baseUrl : string = 'http://localhost:8002'
   //ajouter une cart

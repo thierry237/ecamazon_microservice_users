@@ -10,7 +10,7 @@ import { IAddress } from '../_interfaces/address';
 })
 export class UserService {
 
-  baseUrl: string = 'http://localhost:8004'
+  baseUrl: string = 'http://127.0.0.1:8004'
 
   constructor(private http: HttpClient) { }
 
