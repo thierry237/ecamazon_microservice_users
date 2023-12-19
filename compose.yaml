@@ -35,6 +35,7 @@ services:
       - mysql-user
     environment:
       DATABASE_URL: mysql://root@172.21.0.2:3306/ecamazon_users
+    restart: on-failure
 
   user-service:
     container_name: user-container
