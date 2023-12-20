@@ -97,30 +97,3 @@ jobs:
           push: true
           tags: thierryjoel/frontend:latest
           context: Frontend
-
-  deploy:
-    name: Deploy to Minikube
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Setup Minikube
-        run: minikube start --driver=docker
-
-      - name: Load Docker images into Minikube
-        run: minikube image load thierryjoel/backend:latest thierryjoel/frontend:latest your-dockerhub-username/mysql-image:latest
-
-      - name: Deploy database to Minikube
-        run: kubectl apply -f ./kubernetes/mysql-config.yaml 
-      - name: Deploy database to Minikube
-        run: kubectl apply -f ./kubernetes/mysql-secret.yaml 
-      - name: Deploy database to Minikube
-        run: kubectl apply -f ./kubernetes/user-mysql.yaml 
-
-      - name: Deploy backend to Minikube
-        run: kubectl apply -f ./kubernetes/user-backend.yaml
-
-      - name: Deploy frontend to Minikube
-        run: kubectl apply -f ./kubernetes/user-frontend.yaml
