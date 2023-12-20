@@ -43,6 +43,12 @@ jobs:
       - name: Run backend tests
         working-directory: Backend
         run: npm test -- --detectOpenHandles
+        env:
+          MYSQL_HOST: localhost
+          MYSQL_PORT: 3307
+          MYSQL_USER: root
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE: ecamazon_users
 
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -59,12 +65,7 @@ jobs:
           push: true
           tags: thierryjoel/backend:latest
           context: Backend
-        env:
-          MYSQL_HOST: localhost
-          MYSQL_PORT: 3307
-          MYSQL_USER: root
-          MYSQL_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-          MYSQL_DATABASE: ecamazon_users
+        
 
   frontend:
     runs-on: ubuntu-latest
