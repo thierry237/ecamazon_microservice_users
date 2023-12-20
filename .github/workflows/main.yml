@@ -136,8 +136,12 @@ jobs:
         run: minikube image load thierryjoel/backend:latest thierryjoel/frontend:latest your-dockerhub-username/mysql-image:latest
 
       - name: Deploy database to Minikube
-        run: kubectl apply -f ./kubernetes/mysql-config.yaml ./kubernetes/mysql-secret.yaml ./kubernetes/user-mysql.yaml
-        
+        run: kubectl apply -f ./kubernetes/mysql-config.yaml 
+      - name: Deploy database to Minikube
+        run: kubectl apply -f ./kubernetes/mysql-secret.yaml 
+      - name: Deploy database to Minikube
+        run: kubectl apply -f ./kubernetes/user-mysql.yaml 
+
       - name: Deploy backend to Minikube
         run: kubectl apply -f ./kubernetes/user-backend.yaml
 
