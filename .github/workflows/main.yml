@@ -34,7 +34,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 20.0 # Specify the Node.js version you need
+          node-version: 20.0 # Spécifiez la version de Node.js dont vous avez besoin
 
       - name: Install backend dependencies
         working-directory: Backend
@@ -60,11 +60,11 @@ jobs:
           tags: thierryjoel/backend:latest
           context: Backend
         env:
-           MYSQL_HOST: localhost
-           MYSQL_PORT: 3307
-           MYSQL_USER: root
-           MYSQL_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-           MYSQL_DATABASE: ecamazon_users
+          MYSQL_HOST: localhost
+          MYSQL_PORT: 3307
+          MYSQL_USER: root
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE: ecamazon_users
 
   frontend:
     runs-on: ubuntu-latest
@@ -76,8 +76,7 @@ jobs:
       - name: Setup Node.js and Angular
         uses: actions/setup-node@v2
         with:
-          node-version: 20.0 # Specify the Node.js version you need
-
+          node-version: 20.0 
       - name: Install frontend dependencies
         working-directory: Frontend
         run: npm install
