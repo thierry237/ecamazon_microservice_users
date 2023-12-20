@@ -28,7 +28,7 @@ app.use(function (req, res, next) {
 });
 
 // Launch app to listen to specified port
-const port = process.env.PORT || 8004;
+const port = process.env.PORT || 3000;
 const server = app.listen(port, function () {
     console.log('Runnings on ' + process.env.SERVER + port);
 });

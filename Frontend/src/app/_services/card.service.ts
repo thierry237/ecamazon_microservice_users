@@ -11,7 +11,7 @@ export class CardService {
 
   baseUrl: string = 'http://127.0.0.1:8004'
 
-  /*baseUrl : string = 'http://localhost:8002'
+  /*baseUrl : string = 'http://payment:8002'
   //ajouter une cart
   addCard(card: ICard): Observable<any> {
     const headers = new HttpHeaders({

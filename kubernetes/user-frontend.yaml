@@ -17,7 +17,7 @@ spec:
           image: thierryjoel/frontend:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 8080
+            - containerPort: 5000
           resources:
             requests:
               memory: "256Mi"
@@ -34,9 +34,9 @@ metadata:
 spec:
   selector:
     app: user-frontend
-  type: NodePort
+  type: LoadBalancer
   ports:
     - protocol: TCP
-      port: 8080
-      targetPort: 8080
-      nodePort: 30019
+      port: 5000
+      #targetPort: 8080
+      # nodePort: 30019

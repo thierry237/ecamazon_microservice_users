@@ -1,4 +1,4 @@
-name: Node.js Continuous Integration
+name: Continuous Integration Node.js
 
 on:
   push:
@@ -6,6 +6,24 @@ on:
       - main
 
 jobs:
+  build:
+    name: Build Docker image and push to Docker Hub
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE: ecamazon_users
+        ports:
+          - 3307:3306
+        options: >-
+          --health-cmd "mysqladmin ping -h localhost -uroot -proot"
+          --health-interval 8s
+          --health-timeout 8s
+          --health-retries 4
+
   backend:
     runs-on: ubuntu-latest
 
@@ -13,15 +31,96 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: 20.9.0
+          node-version: 20.0 # Specify the Node.js version you need
 
-      - name: Install dependencies for backend
+      - name: Install backend dependencies
         working-directory: Backend
         run: npm install
 
-      - name: Run tests for backend
+      - name: Run backend tests
         working-directory: Backend
         run: npm test -- --detectOpenHandles
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Docker Hub login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build and push Docker image for backend
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: thierryjoel/backend:latest
+          context: Backend
+        env:
+           MYSQL_HOST: localhost
+           MYSQL_PORT: 3307
+           MYSQL_USER: root
+           MYSQL_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+           MYSQL_DATABASE: ecamazon_users
+
+  frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js and Angular
+        uses: actions/setup-node@v2
+        with:
+          node-version: 20.0 # Specify the Node.js version you need
+
+      - name: Install frontend dependencies
+        working-directory: Frontend
+        run: npm install
+
+      - name: Build Angular frontend
+        working-directory: Frontend
+        run: npm run build
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Docker Hub login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build and push Docker image for frontend
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: thierryjoel/frontend:latest
+          context: Frontend
+
+  database:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Docker Hub login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build and push Docker image for MySQL
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: your-dockerhub-username/mysql-image:latest
+          context: Database

@@ -17,7 +17,7 @@ spec:
           image: thierryjoel/backend:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 3000
+            - containerPort: 8004
           env:
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
@@ -45,9 +45,9 @@ metadata:
 spec:
   selector:
     app: user-api
-  type: NodePort
+  type: LoadBalancer
   ports:
     - protocol: TCP
-      port: 3000
-      targetPort: 3000
-      nodePort: 30018
+      port: 8004
+      # targetPort: 3000
+      # nodePort: 30018
