@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, catchError, map } from 'rxjs';
 import { IAddress } from '../_interfaces/address';
 
 
@@ -11,20 +11,32 @@ export class AddressService {
 
   baseUrl: string = 'http://127.0.0.1:8004'
 
-  /*baseUrl : string = 'http://shipping:8002'
-  ajouter address (envoyer cette information à l'équipe shipping)
-  addAddress(address: IAddress): Observable<any> {
-     const headers = new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      })
-      return this.http.post<any>(this.baseUrl + '/address', address, { "headers": headers })
-    } 
-    
-  */
-
-
+  baseUrlShipping: string = 'http://shipping:8002';
   constructor(private http: HttpClient) { }
+
+  // Récupérer les adresses d'un utilisateur spécifique
+  getAddressesByUserId(userId: number): Observable<IAddress[]> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${localStorage.getItem('token')}`
+    });
+
+    const url = `${this.baseUrlShipping}/addresses/${userId}`;
+
+    return this.http.get<IAddress[]>(url, { headers: headers })
+      .pipe(
+        map((addresses) => {
+          // Traitement des adresses récupérées
+          console.log('Adresses récupérées avec succès:', addresses);
+          return addresses;
+        }),
+        catchError((error) => {
+          // Gérer les erreurs HTTP ici
+          console.error('Erreur HTTP:', error);
+          throw error;
+        })
+      );
+  }
 
   //liste des addresses d'un user
   getListAddress(idUser: number): Observable<IAddress[]> {

@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, catchError, map } from 'rxjs';
 import { ICard } from '../_interfaces/card';
 
 
@@ -11,18 +11,39 @@ export class CardService {
 
   baseUrl: string = 'http://127.0.0.1:8004'
 
-  /*baseUrl : string = 'http://payment:8002'
-  //ajouter une cart
-  addCard(card: ICard): Observable<any> {
+
+  baseUrlPayment: string = 'http://paiement:3000/'
+
+  constructor(private http: HttpClient) { }
+
+  addCardPayment(card: ICard): Observable<any> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${localStorage.getItem('token')}`
-    })
-    return this.http.post<any>(this.baseUrl + '/card', card, { "headers": headers })
-  } */
+    });
+
+    return this.http.post<any>(this.baseUrl + 'card', card, { headers: headers })
+      .pipe(
+        map((response) => {
+          if (response.status === 200) {
+            // Afficher un message de confirmation ici
+            console.log('Carte ajoutée avec succès !');
+          } else {
+            // Afficher un message d'erreur ici
+            console.error('Erreur lors de l\'ajout de la carte.');
+          }
+          return response;
+        }),
+        catchError((error) => {
+          // Gérer les erreurs HTTP ici
+          console.error('Erreur HTTP:', error);
+          throw error;
+        })
+      );
+  }
 
 
-  constructor(private http: HttpClient) { }
+
 
   //liste des cards d'un user
   getListCard(idUser: number): Observable<ICard[]> {
