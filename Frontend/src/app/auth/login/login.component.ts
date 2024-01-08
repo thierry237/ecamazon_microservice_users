@@ -13,7 +13,7 @@ import { TokenService } from 'src/app/_services/token.service';
 })
 
 export class LoginComponent implements OnInit {
-  title = 'Ecamazon';
+  title = 'ECAMazon';
   email_error!: string | null;
   password_error!: string | null;
 

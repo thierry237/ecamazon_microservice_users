@@ -10,7 +10,7 @@ import { AuthService } from 'src/app/_services/auth.service';
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit {
-  title = "Ecamazon";
+  title = "ECAMazon";
   email_error!: string | null;
   username_error!: string | null;
   inscriptionValide: boolean = false;

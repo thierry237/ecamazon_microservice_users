@@ -1,0 +1,491 @@
+openapi: 3.0.0
+info:
+  title: Gestion des Utilisateurs, Cartes et Adresses API
+  version: 1.0.0
+
+paths:
+  /login:
+    post:
+      summary: Connexion utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              email: "user@example.com"
+              password: "password123"
+      responses:
+        "200":
+          description: Connexion réussie
+          content:
+            application/json:
+              example:
+                idUser: 1
+                isAdmin: false
+                username: "john_doe"
+                token: "token"
+
+  /users:
+    get:
+      summary: Liste des utilisateurs
+      responses:
+        "200":
+          description: Succès
+          content:
+            application/json:
+              example:
+                - idUser: 1
+                  lastname: "Doe"
+                  firstname: "John"
+                  username: "john_doe"
+                  email: "john@example.com"
+                  isAdmin: false
+                  createdAt: "2024-01-08T12:00:00Z"
+                - idUser: 2
+                  lastname: "Smith"
+                  firstname: "Jane"
+                  username: "jane_smith"
+                  email: "jane@example.com"
+                  isAdmin: true
+                  createdAt: "2024-01-08T13:00:00Z"
+  /user:
+    post:
+      summary: Ajouter un utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              lastname: "Doe"
+              firstname: "John"
+              username: "john_doe"
+              email: "john@example.com"
+              password: "password123"
+              isAdmin: false
+      responses:
+        "201":
+          description: Utilisateur ajouté avec succès
+          content:
+            application/json:
+              example:
+                idUser: 3
+                username: "john_doe"
+                isAdmin: false
+
+  /user/{idUser}:
+    get:
+      summary: Afficher un utilisateur
+      parameters:
+        - in: path
+          name: idUser
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Succès
+          content:
+            application/json:
+              example:
+                idUser: 1
+                lastname: "Doe"
+                firstname: "John"
+                username: "john_doe"
+                email: "john@example.com"
+                isAdmin: false
+                createdAt: "2024-01-08T12:00:00Z"
+
+    put:
+      summary: Modifier un utilisateur
+      parameters:
+        - in: path
+          name: idUser
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              lastname: "Doe"
+              firstname: "John"
+              username: "john_doe"
+              email: "john@example.com"
+              password: "newpassword123"
+              isAdmin: true
+      responses:
+        "200":
+          description: Utilisateur mis à jour avec succès
+          content:
+            application/json:
+              example:
+                message: "Utilisateur mis à jour"
+
+    delete:
+      summary: Supprimer un utilisateur
+      parameters:
+        - in: path
+          name: idUser
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Utilisateur supprimé avec succès
+          content:
+            application/json:
+              example:
+                message: "Utilisateur supprimé"
+
+  /user/{idUser}/addresses:
+    get:
+      summary: Liste des adresses d'un utilisateur
+      parameters:
+        - in: path
+          name: idUser
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Succès
+          content:
+            application/json:
+              example:
+                - idAddress: 1
+                  typeAddress: "livraison"
+                  country: "France"
+                  city: "Paris"
+                  street: "Rue de Rivoli"
+                  postalCode: "75001"
+                - idAddress: 2
+                  typeAddress: "facturation"
+                  country: "Belgium"
+                  city: "Antwerp"
+                  street: "chaussée de Mons 19"
+                  postalCode: "1080"
+
+    delete:
+      summary: Supprimer toutes les adresses d'un utilisateur
+      parameters:
+        - in: path
+          name: idUser
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Adresses supprimées avec succès
+          content:
+            application/json:
+              example:
+                message: "Toutes les adresses de l'utilisateur ont été supprimées"
+
+  /user/{idUser}/cards:
+    get:
+      summary: Liste des cartes d'un utilisateur
+      parameters:
+        - in: path
+          name: idUser
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Succès
+          content:
+            application/json:
+              example:
+                - idCard: 1
+                  methodPayment: "Visa"
+                  cardNumber: "**** **** **** 1234"
+                  nameCard: "John Doe"
+                  expiredDate: "12/25"
+                - idCard: 2
+                  methodPayment: "MasterCard"
+                  cardNumber: "**** **** **** 5678"
+                  nameCard: "Jane Smith"
+                  expiredDate: "10/24"
+
+    delete:
+      summary: Supprimer toutes les cartes d'un utilisateur
+      parameters:
+        - in: path
+          name: idUser
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Cartes supprimées avec succès
+          content:
+            application/json:
+              example:
+                message: "Toutes les cartes de l'utilisateur ont été supprimées"
+
+  /cards:
+    get:
+      summary: Liste de toutes les cartes
+      responses:
+        "200":
+          description: Succès
+          content:
+            application/json:
+              example:
+                - idCard: 1
+                  methodPayment: "Visa"
+                  cardNumber: "**** **** **** 1234"
+                  nameCard: "John Doe"
+                  expiredDate: "12/25"
+                - idCard: 2
+                  methodPayment: "MasterCard"
+                  cardNumber: "**** **** **** 5678"
+                  nameCard: "Jane Smith"
+                  expiredDate: "10/24"
+  /card:
+    post:
+      summary: Ajouter une carte
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              methodPayment: "Visa"
+              cardNumber: "4111111111111111"
+              nameCard: "John Doe"
+              expiredDate: "12/25"
+              cvv: "123"
+      responses:
+        "201":
+          description: Carte ajoutée avec succès
+          content:
+            application/json:
+              example:
+                idCard: 3
+                methodPayment: "Visa"
+                cardNumber: "**** **** **** 1111"
+                nameCard: "John Doe"
+                expiredDate: "12/25"
+                idUser: 2
+
+  /card/{idCard}:
+    get:
+      summary: Afficher une carte
+      parameters:
+        - in: path
+          name: idCard
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Succès
+          content:
+            application/json:
+              example:
+                idCard: 1
+                methodPayment: "Visa"
+                cardNumber: "**** **** **** 1234"
+                nameCard: "John Doe"
+                expiredDate: "12/25"
+
+    put:
+      summary: Modifier une carte
+      parameters:
+        - in: path
+          name: idCard
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              methodPayment: "MasterCard"
+              cardNumber: "**** **** **** 5678"
+              nameCard: "Jane Smith"
+              expiredDate: "10/24"
+              cvv: "456"
+      responses:
+        "200":
+          description: Carte mise à jour avec succès
+          content:
+            application/json:
+              example:
+                message: "Carte mise à jour"
+
+    delete:
+      summary: Supprimer une carte
+      parameters:
+        - in: path
+          name: idCard
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Carte supprimée avec succès
+          content:
+            application/json:
+              example:
+                message: "Carte supprimée"
+
+  /addresses:
+    get:
+      summary: Liste de toutes les adresses
+      responses:
+        "200":
+          description: Succès
+          content:
+            application/json:
+              example:
+                - idAddress: 1
+                  typeAddress: "livraison"
+                  country: "France"
+                  city: "Paris"
+                  street: "Rue de Rivoli"
+                  postalCode: "75001"
+                - idAddress: 2
+                  typeAddress: "facturation"
+                  country: "Belgium"
+                  city: "Antwerp"
+                  street: "chaussée de Mons 19"
+                  postalCode: "1070"
+  /address:
+    post:
+      summary: Ajouter une adresse
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              typeAddress: "livraison"
+              country: "France"
+              city: "Paris"
+              street: "Rue de Rivoli"
+              postalCode: "75001"
+      responses:
+        "201":
+          description: Adresse ajoutée avec succès
+          content:
+            application/json:
+              example:
+                idAddress: 3
+                typeAddress: "livraison"
+                country: "France"
+                city: "Paris"
+                street: "Rue de Rivoli"
+                postalCode: "75001"
+                idUser: 2
+
+  /address/{idAddress}:
+    get:
+      summary: Afficher une adresse
+      parameters:
+        - in: path
+          name: idAddress
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Succès
+          content:
+            application/json:
+              example:
+                idAddress: 1
+                typeAddress: "livraison"
+                country: "France"
+                city: "Paris"
+                street: "Rue de Rivoli"
+                postalCode: "75001"
+                idUser: 2
+
+    put:
+      summary: Modifier une adresse
+      parameters:
+        - in: path
+          name: idAddress
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            example:
+              typeAddress: "facturation"
+              country: "Belgium"
+              city: "Antwerp"
+              street: "chaussée de Mons 19"
+              postalCode: "1080"
+      responses:
+        "200":
+          description: Adresse mise à jour avec succès
+          content:
+            application/json:
+              example:
+                message: "Adresse mise à jour"
+
+    delete:
+      summary: Supprimer une adresse
+      parameters:
+        - in: path
+          name: idAddress
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Adresse supprimée avec succès
+          content:
+            application/json:
+              example:
+                message: "Adresse supprimée"
+
+  /user/{idUser}/addresses/:
+    get:
+      summary: Liste des adresses d'un utilisateur
+      parameters:
+        - in: path
+          name: idUser
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Succès
+          content:
+            application/json:
+              example:
+                - idAddress: 1
+                  typeAddress: "livraison"
+                  country: "France"
+                  city: "Paris"
+                  street: "Rue de Rivoli"
+                  postalCode: "75001"
+                - idAddress: 2
+                  typeAddress: "facturation"
+                  country: "Belgium"
+                  city: "Antwerp"
+                  street: "chaussée de Mons 19"
+                  postalCode: "1080"
+
+  /user/{idUser}/addresses/delete:
+    delete:
+      summary: Supprimer toutes les adresses d'un utilisateur
+      parameters:
+        - in: path
+          name: idUser
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Adresses supprimées avec succès
+          content:
+            application/json:
+              example:
+                message: "Toutes les adresses de l'utilisateur ont été supprimées"
